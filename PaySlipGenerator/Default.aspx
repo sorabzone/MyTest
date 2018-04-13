@@ -11,12 +11,26 @@
             <tr>
                 <td colspan="3">
                     <span class="h2">
-                        <label>Translate</label></span>
+                        <label>Generate PaySlips</label></span>
                 </td>
             </tr>
             <tr>
                 <td colspan="3">
                     <hr class="mb-4">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <label>State:</label>
+                    <asp:DropDownList runat="server" ID="ddlState">
+                        <asp:ListItem Selectked="True" Text="NSW" Value="NSW"></asp:ListItem>
+                        <asp:ListItem Text="Victoria" Value="Victoria"></asp:ListItem>
+                    </asp:DropDownList>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <label></label>
                 </td>
             </tr>
             <tr>

@@ -4,6 +4,7 @@ using System;
 using System.Data;
 using System.IO;
 using System.Text;
+using PaySlipGenerator.Helper;
 
 namespace PaySlipGenerator
 {
@@ -24,14 +25,14 @@ namespace PaySlipGenerator
                 if (Path.GetExtension(uploadFile.FileName).Equals(".xlsx"))
                 {
                     var excel = new ExcelPackage(uploadFile.FileContent);
-                    var dt = excel.ToDataTable();
+                    var paySlips = PaySlipWorker.GeneratePaySlipsExcel(excel, ddlState.SelectedValue);
 
                     string excelName = "PaySlips";
                     using (var memoryStream = new MemoryStream())
                     {
                         Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
                         Response.AddHeader("content-disposition", "attachment; filename=" + excelName + ".xlsx");
-                        dt.SaveAs(memoryStream);
+                        paySlips.SaveAs(memoryStream);
                         memoryStream.WriteTo(Response.OutputStream);
                         Response.Flush();
                         Response.End();

@@ -7,7 +7,7 @@ namespace PaySlipFactory.StateFactories
     {
         public override BasePaySlipEngine GetPaySlipEngine()
         {
-            return new NSWPaySlipEngine();
+            return new VictoriaPaySlipEngine();
         }
     }
 }

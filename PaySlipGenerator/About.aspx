@@ -1,7 +1,7 @@
-﻿<%@ Page Title="About" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="About.aspx.cs" Inherits="PaySlipGenerator.About" %>
+﻿<%@ Page Title="About Me" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="About.aspx.cs" Inherits="PaySlipGenerator.About" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <h2><%: Title %>.</h2>
-    <h3>Your application description page.</h3>
-    <p>Use this area to provide additional information.</p>
+    <h3>Coding test for MYOB.</h3>
+    <p>I will try hard to crack the interview.</p>
 </asp:Content>

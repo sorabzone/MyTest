@@ -12,11 +12,11 @@ using PaySlipFactory.StateFactories;
 using PaySlipEngine.BaseEngine;
 using System;
 
-namespace PaySlipGenerator
+namespace PaySlipGenerator.Helper
 {
-    public static class ExcelPackageExtensions
+    public static class PaySlipWorker
     {
-        public static ExcelPackage ToDataTable(this ExcelPackage package)
+        public static ExcelPackage GeneratePaySlipsExcel(ExcelPackage package, string state)
         {
             try
             {
@@ -28,21 +28,24 @@ namespace PaySlipGenerator
 
                 //Output
                 ExcelPackage excelExport = new ExcelPackage();
-                var workSheetOutput = excelExport.Workbook.Worksheets.Add("Transation");
+                var workSheetOutput = excelExport.Workbook.Worksheets.Add("PaySlips");
                 workSheetOutput.TabColor = System.Drawing.Color.Black;
                 workSheetOutput.DefaultRowHeight = 12;
-                //Header of table  
-                workSheetOutput.Row(1).Height = 20;
-                workSheetOutput.Row(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                workSheetOutput.Row(1).Style.Font.Bold = true;
+                int recordIndex = 1;
 
-                workSheetOutput.Cells[1, 1].Value = "Name";
-                workSheetOutput.Cells[1, 2].Value = "GrossIncome";
-                workSheetOutput.Cells[1, 3].Value = "IncomeTax";
-                workSheetOutput.Cells[1, 4].Value = "NetIncome";
-                workSheetOutput.Cells[1, 5].Value = "Super";
-                workSheetOutput.Cells[1, 6].Value = "PayPeriod";
+                //Header of output excel  
+                workSheetOutput.Row(recordIndex).Height = 20;
+                workSheetOutput.Row(recordIndex).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                workSheetOutput.Row(recordIndex).Style.Font.Bold = true;
 
+                workSheetOutput.Cells[recordIndex, 1].Value = OutputExcelColumn.Name;
+                workSheetOutput.Cells[recordIndex, 2].Value = OutputExcelColumn.GrossIncome;
+                workSheetOutput.Cells[recordIndex, 3].Value = OutputExcelColumn.IncomeTax;
+                workSheetOutput.Cells[recordIndex, 4].Value = OutputExcelColumn.NetIncome;
+                workSheetOutput.Cells[recordIndex, 5].Value = OutputExcelColumn.Super;
+                workSheetOutput.Cells[recordIndex, 6].Value = OutputExcelColumn.PayPeriod;
+
+                // This loop will accept input excel even if order of columns is different
                 for (int iCol = 1; iCol <= workSheet.Dimension.End.Column; iCol++)
                 {
                     var colName = Convert.ToString(((object[,])workSheet.Cells[1, 1, 1, workSheet.Dimension.End.Column].Value)[0, iCol - 1]);
@@ -66,8 +69,56 @@ namespace PaySlipGenerator
                     }
                 }
 
-                ConcurrentBag<EngineInput> bag = new ConcurrentBag<EngineInput>();
+                // Thread-safe collection to handle input data processing
+                BlockingCollection<EngineInput> bag = new BlockingCollection<EngineInput>();
 
+                // Blocking Consumer task - reaing records from collection and processing
+                Task t2 = Task.Factory.StartNew(() =>
+                {
+                    PaySlipEngineFactory factory = null;
+                    switch (state)
+                    {
+                        case States.NSW:
+                            factory = new NSWFactory();
+                            break;
+                        case States.Victoria:
+                            factory = new VictoriaFactory();
+                            break;
+                    }
+
+                    EngineOutput paySlipOutput = null;
+                    BasePaySlipEngine payEngine = factory.GetPaySlipEngine();
+                    EngineInput input = null;
+
+                    // Take() was called on a completed collection.
+                    // Some other thread can call CompleteAdding after we pass the
+                    // IsCompleted check but before we call Take. 
+                    // In this example, we can simply catch the exception since the 
+                    // loop will break on the next iteration.
+                    while (!bag.IsCompleted)
+                    {
+                        recordIndex++; input = null;
+                        try
+                        {
+                            input = bag.Take();
+                        }
+                        catch (InvalidOperationException) { break;  }
+
+                        if (input != null)
+                        {
+                            paySlipOutput = payEngine.GeneratePaySlip(input);
+
+                            workSheetOutput.Cells[recordIndex, 1].Value = paySlipOutput.Name;
+                            workSheetOutput.Cells[recordIndex, 2].Value = paySlipOutput.GrossIncome;
+                            workSheetOutput.Cells[recordIndex, 3].Value = paySlipOutput.IncomeTax;
+                            workSheetOutput.Cells[recordIndex, 4].Value = paySlipOutput.NetIncome;
+                            workSheetOutput.Cells[recordIndex, 5].Value = paySlipOutput.Super;
+                            workSheetOutput.Cells[recordIndex, 6].Value = paySlipOutput.PayPeriod;
+                        }
+                    }
+                });
+
+                // Blocking Producer task - reading records from excel sheet
                 Task t1 = Task.Factory.StartNew(() =>
                 {
                     EngineInput inputObj = null;
@@ -112,41 +163,12 @@ namespace PaySlipGenerator
 
                         bag.Add(inputObj);
                     }
+
+                    // Let consumer know we are done.
+                    bag.CompleteAdding();
                 });
-
-                int recordIndex = 2;
-                Task t2 = Task.Factory.StartNew(() =>
-                {
-                    string state = "NSW";
-                    PaySlipEngineFactory factory = null;
-                    switch (state)
-                    {
-                        case "NSW":
-                            factory = new NSWFactory();
-                            break;
-                        case "Victoria":
-                            factory = new VictoriaFactory();
-                            break;
-                    }
-
-                    EngineOutput paySlipOutput = null;
-                    BasePaySlipEngine payEngine = factory.GetPaySlipEngine();
-
-                    foreach (EngineInput input in bag)
-                    {
-                        paySlipOutput = payEngine.GeneratePaySlip(input);
-
-                        workSheetOutput.Cells[recordIndex, 1].Value = paySlipOutput.Name;
-                        workSheetOutput.Cells[recordIndex, 2].Value = paySlipOutput.GrossIncome;
-                        workSheetOutput.Cells[recordIndex, 3].Value = paySlipOutput.IncomeTax;
-                        workSheetOutput.Cells[recordIndex, 4].Value = paySlipOutput.NetIncome;
-                        workSheetOutput.Cells[recordIndex, 5].Value = paySlipOutput.Super;
-                        workSheetOutput.Cells[recordIndex, 6].Value = paySlipOutput.PayPeriod;
-                        recordIndex++;
-                    }
-
-                });
-
+                
+                // Wait till both producer and consumer finish their job
                 Task main = Task.WhenAll(t1, t2);
                 main.Wait();
                 return excelExport;
