@@ -14,7 +14,7 @@ namespace PaySlipEngine.BaseEngine
         {
             EngineOutput payslip = new EngineOutput();
 
-            payslip.Name = employeeSalaryDetail.FirstName + employeeSalaryDetail.LastName;
+            payslip.Name = employeeSalaryDetail.FirstName + " " + employeeSalaryDetail.LastName;
             payslip.PayPeriod = employeeSalaryDetail.PayPeriod;
             payslip.GrossIncome = CalculateGrossIncome(employeeSalaryDetail.AnnualSalary);
             payslip.IncomeTax = CalculateIncomeTax(employeeSalaryDetail.AnnualSalary);
@@ -25,16 +25,23 @@ namespace PaySlipEngine.BaseEngine
         }
 
         /// <summary>
-        /// This methos calculates gross income
+        /// This method calculates gross income
         /// </summary>
         /// <returns>gross income amount</returns>
         public virtual decimal CalculateGrossIncome(decimal annualSalary)
         {
-            return Math.Round(annualSalary / 12);
+            try
+            {
+                return Math.Round(annualSalary / 12);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         /// <summary>
-        /// This methos calculates income tax
+        /// This method calculates income tax
         /// </summary>
         /// <returns>income tax amount</returns>
         public abstract decimal CalculateIncomeTax(decimal annualSalary);
@@ -45,16 +52,30 @@ namespace PaySlipEngine.BaseEngine
         /// <returns>Net income amount</returns>
         public virtual decimal CalculateNetIncome(decimal grossIncome, decimal incomeTax)
         {
-            return Math.Round(grossIncome - incomeTax);
+            try
+            {
+                return Math.Round(grossIncome - incomeTax);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         /// <summary>
-        /// /// This methos calculates super    
+        /// /// This method calculates super    
         /// </summary>
         /// <returns>super amount</returns>
         public virtual decimal CalculateSuper(decimal grossIncome, decimal rate)
         {
-            return Math.Round(grossIncome * rate / 100);
+            try
+            {
+                return Math.Round(grossIncome * rate / 100);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     };
 }

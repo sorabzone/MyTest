@@ -2,7 +2,7 @@
 using System;
 using System.Text;
 
-namespace CommonLogger
+namespace CommonLoggers
 {
     public static class CommonLogger
     {

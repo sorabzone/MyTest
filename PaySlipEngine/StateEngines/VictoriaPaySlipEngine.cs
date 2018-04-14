@@ -9,7 +9,7 @@ namespace PaySlipEngine.StateEngines
     public class VictoriaPaySlipEngine : BasePaySlipEngine
     {
         /// <summary>
-        /// This methos calculates income tax
+        /// This method calculates income tax
         /// </summary>
         /// <returns>income tax amount</returns>
         public override decimal CalculateIncomeTax(decimal annualSalary)

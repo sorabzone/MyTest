@@ -1,10 +1,8 @@
-﻿using OfficeOpenXml;
-using OfficeOpenXml.Style;
-using System;
-using System.Data;
-using System.IO;
-using System.Text;
+﻿using CommonLoggers;
+using OfficeOpenXml;
 using PaySlipGenerator.Helper;
+using System;
+using System.IO;
 
 namespace PaySlipGenerator
 {
@@ -15,7 +13,12 @@ namespace PaySlipGenerator
             ErroMsg.Text = "";
         }
 
-        protected void btnTranslate_Click(object sender, EventArgs e)
+        /// <summary>
+        /// This event handles the generation of payslips
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void btnGenerate_Click(object sender, EventArgs e)
         {
             try
             {
@@ -35,19 +38,32 @@ namespace PaySlipGenerator
                         paySlips.SaveAs(memoryStream);
                         memoryStream.WriteTo(Response.OutputStream);
                         Response.Flush();
-                        Response.End();
                     }
                 }
                 else
                     ErroMsg.Text = "Please select valid excel file.";
             }
+            catch (AggregateException ex)
+            {
+                foreach(var exp in ex.InnerExceptions)
+                {
+                    CommonLogger.LogError(exp.InnerException != null ? exp.InnerException : exp);
+                    ErroMsg.Text = exp.InnerException != null ? exp.InnerException.Message : exp.Message;
+                }
+                CommonLogger.LogError(ex);
+                ErroMsg.Text = ErroMsg.Text + "\n" + ex.Message;
+            }
             catch (Exception ex)
             {
-                ErroMsg.Text = ex.Message + "\n Stack Trace: " + ex.StackTrace;
-                throw;
+                CommonLogger.LogError(ex);
+                ErroMsg.Text = ex.Message;
             }
             finally
             {
+                uploadFile.Dispose();
+
+                if(Response.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    Response.End();
             }
         }
     }

@@ -48,7 +48,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constant\Constants.cs" />
-    <Compile Include="Helper\HelperFunctions.cs" />
     <Compile Include="BaseEngine\BasePaySlipEngine.cs" />
     <Compile Include="Model\EngineOutput.cs" />
     <Compile Include="Model\EngineInput.cs" />

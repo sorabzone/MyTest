@@ -1,0 +1,48 @@
+2018-04-14 21:09:40.6027|ERROR|CommonLoggers.CommonLogger|
+
+---------------------------ERROR---------------------------
+-----------------------------------------------------------
+Message: Super rate should be in 0-50% range. Value: 55
+StackTrace:    at PaySlipGenerator.Helper.PaySlipWorker.<>c__DisplayClass0_1.<GeneratePaySlipsExcel>b__2(Int32 rowNumber, ParallelLoopState loopState) in C:\Test\MyTest\PaySlipGenerator\Helper\PaySlipWorker.cs:line 141
+Source: PaySlipGenerator
+TargetSite: Void <GeneratePaySlipsExcel>b__2(Int32, System.Threading.Tasks.ParallelLoopState)
+-----------------------------------------------------------
+-----------------------------------------------------------
+2018-04-14 21:09:40.6678|ERROR|CommonLoggers.CommonLogger|
+
+---------------------------ERROR---------------------------
+-----------------------------------------------------------
+Message: One or more errors occurred.
+StackTrace:    at System.Threading.Tasks.Task.ThrowIfExceptional(Boolean includeTaskCanceledExceptions)
+   at System.Threading.Tasks.Task.Wait(Int32 millisecondsTimeout, CancellationToken cancellationToken)
+   at System.Threading.Tasks.Task.Wait()
+   at PaySlipGenerator.Helper.PaySlipWorker.GeneratePaySlipsExcel(ExcelPackage package, String state) in C:\Test\MyTest\PaySlipGenerator\Helper\PaySlipWorker.cs:line 169
+   at PaySlipGenerator._Default.btnTranslate_Click(Object sender, EventArgs e) in C:\Test\MyTest\PaySlipGenerator\Default.aspx.cs:line 26
+Source: mscorlib
+TargetSite: Void ThrowIfExceptional(Boolean)
+-----------------------------------------------------------
+-----------------------------------------------------------
+2018-04-14 21:12:44.6286|ERROR|CommonLoggers.CommonLogger|
+
+---------------------------ERROR---------------------------
+-----------------------------------------------------------
+Message: Super rate should be in 0-50% range. Value: 55
+StackTrace:    at PaySlipGenerator.Helper.PaySlipWorker.<>c__DisplayClass0_1.<GeneratePaySlipsExcel>b__2(Int32 rowNumber, ParallelLoopState loopState) in C:\Test\MyTest\PaySlipGenerator\Helper\PaySlipWorker.cs:line 141
+Source: PaySlipGenerator
+TargetSite: Void <GeneratePaySlipsExcel>b__2(Int32, System.Threading.Tasks.ParallelLoopState)
+-----------------------------------------------------------
+-----------------------------------------------------------
+2018-04-14 21:12:44.6757|ERROR|CommonLoggers.CommonLogger|
+
+---------------------------ERROR---------------------------
+-----------------------------------------------------------
+Message: One or more errors occurred.
+StackTrace:    at System.Threading.Tasks.Task.ThrowIfExceptional(Boolean includeTaskCanceledExceptions)
+   at System.Threading.Tasks.Task.Wait(Int32 millisecondsTimeout, CancellationToken cancellationToken)
+   at System.Threading.Tasks.Task.Wait()
+   at PaySlipGenerator.Helper.PaySlipWorker.GeneratePaySlipsExcel(ExcelPackage package, String state) in C:\Test\MyTest\PaySlipGenerator\Helper\PaySlipWorker.cs:line 169
+   at PaySlipGenerator._Default.btnTranslate_Click(Object sender, EventArgs e) in C:\Test\MyTest\PaySlipGenerator\Default.aspx.cs:line 26
+Source: mscorlib
+TargetSite: Void ThrowIfExceptional(Boolean)
+-----------------------------------------------------------
+-----------------------------------------------------------
